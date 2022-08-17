@@ -6,11 +6,11 @@ import 'package:randomize_photo_mosh/randomize_photo_mosh.dart';
 void main() async {
   // Download the Chromium binaries, launch it and connect to the "DevTools"
   final browser = await puppeteer.launch(
-    headless: false,
+    headless: true,
   );
 
   final inputFile = File(
-    '../example/input/eevee.png',
+    'example/input/eevee.png',
   );
 
   // Open a new tab
@@ -47,6 +47,11 @@ void main() async {
   print('Clicking mosh button...');
   await moshButtonElement.click();
 
+  await myPage.devTools.browser.setDownloadBehavior(
+    'allow',
+    downloadPath: '/example/output',
+  );
+
   final saveButtonElement = await myPage.$(
     saveButtonSelectorExpression,
   );
@@ -54,8 +59,6 @@ void main() async {
   // Click save button
   print('Clicking save button...');
   await saveButtonElement.click();
-
-  await Future.delayed(Duration(seconds: 2));
 
   // Gracefully close the browser's process
   await browser.close();
