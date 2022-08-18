@@ -3,82 +3,107 @@ import 'dart:io';
 import 'package:puppeteer/puppeteer.dart';
 import 'package:randomize_photo_mosh/randomize_photo_mosh.dart';
 
-void main() async {
-  // Download the Chromium binaries, launch it and connect to the "DevTools"
-  final browser = await puppeteer.launch(
-    headless: true,
-  );
+void main(final List<String> args) async {
+  final parser = programArgParser();
 
-  final inputFile = File(
-    'example/input/eevee.png',
-  );
+  final arguments = Arguments.fromArgs(args, parser);
 
-  final outputFolder = Directory(
-    'example/output/',
-  );
+  if (arguments == null) {
+    print(
+      'Welcome to randomize-photo-mosh! Below are the mandatory arguments you need to specify.',
+    );
+    print(parser.usage);
+  } else {
+    // Download the Chromium binaries, launch it and connect to the "DevTools"
+    final browser = await puppeteer.launch(
+      headless: true,
+    );
 
-  final photoId = DateTime.now().millisecondsSinceEpoch.toString();
+    final inputFile = File(
+      arguments.inputFilePath,
+    );
 
-  // Open a new tab
-  print('Starting browser engine...');
-  final myPage = await browser.newPage();
+    final outputFolder = Directory(
+      arguments.outputDirectoryPath,
+    );
 
-  // Go to a page and wait to be fully loaded
-  print('Loading $photoMoshUrl in a new tab...');
-  await myPage.goto(photoMoshUrl, wait: Until.networkIdle);
+    final outputFileName = arguments.outputFileName;
 
-  final loadFileElement = await myPage.$(
-    loadFileSelectorExpression,
-  );
+    final photoId = DateTime.now().millisecondsSinceEpoch.toString();
 
-  // Click load file
-  print('Clicking load file button...');
-  await loadFileElement.click();
+    // Open a new tab
+    print('Starting browser engine...');
+    final myPage = await browser.newPage();
 
-  final fileInputElement = await myPage.$(
-    fileInputSelectorExpression,
-  );
+    // Go to a page and wait to be fully loaded
+    print('Loading $photoMoshUrl in a new tab...');
+    await myPage.goto(photoMoshUrl, wait: Until.networkIdle);
 
-  // Upload file to file input
-  print('Uploading ${inputFile.path} to input file box...');
-  await fileInputElement.uploadFile(
-    [inputFile],
-  );
+    final loadFileElement = await myPage.$(
+      loadFileSelectorExpression,
+    );
 
-  final moshButtonElement = await myPage.$(
-    moshButtonSelectorExpression,
-  );
+    // Click load file
+    print('Clicking load file button...');
+    await loadFileElement.click();
 
-  // Click mosh button
-  print('Clicking mosh button...');
-  await moshButtonElement.click();
+    final fileInputElement = await myPage.$(
+      fileInputSelectorExpression,
+    );
 
-  await myPage.devTools.browser.setDownloadBehavior(
-    'allow',
-    downloadPath: outputFolder.path,
-  );
+    // Upload file to file input
+    print('Uploading ${inputFile.path} to input file box...');
+    await fileInputElement.uploadFile(
+      [inputFile],
+    );
 
-  await setDownloadFileId(
-    photoId: photoId,
-    page: myPage,
-  );
+    final moshButtonElement = await myPage.$(
+      moshButtonSelectorExpression,
+    );
 
-  final saveButtonElement = await myPage.$(
-    saveButtonSelectorExpression,
-  );
+    // Click mosh button
+    print('Clicking mosh button...');
+    await moshButtonElement.click();
 
-  // Click save button
-  print('Clicking save button...');
-  await saveButtonElement.click();
+    await myPage.devTools.browser.setDownloadBehavior(
+      'allow',
+      downloadPath: outputFolder.path,
+    );
 
-  print('Waiting for moshed photo to be downloaded...');
-  await waitForDownload(
-    outputDirectory: outputFolder,
-    photoId: photoId,
-  );
+    await setDownloadFileId(
+      photoId: photoId,
+      page: myPage,
+    );
 
-  print('Downloaded.');
+    final saveButtonElement = await myPage.$(
+      saveButtonSelectorExpression,
+    );
 
-  // Gracefully close the browser's process
-  await browser.close();
+    // Click save button
+    print('Clicking save button...');
+    await saveButtonElement.click();
+
+    print('Waiting for moshed photo to be downloaded...');
+    final downloadedFile = await waitForDownload(
+      outputDirectory: outputFolder,
+      photoId: photoId,
+    );
+
+    print('Downloaded.');
+
+    if (outputFileName != null) {
+      print('Renaming output file name of moshed photo...');
+
+      final renamedFile = await renameDownloadedFile(
+        downloadedFile: downloadedFile,
+        fileName: outputFileName,
+      );
+
+      print('Renamed (${renamedFile.path})');
+    }
+
+    print('All done. Closing browser engine and exiting.');
+    // Gracefully close the browser's process
+    await browser.close();
+  }
 }
