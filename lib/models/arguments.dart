@@ -8,10 +8,13 @@ class Arguments {
 
   final String? outputFileName;
 
+  final bool headless;
+
   const Arguments({
     required this.inputFilePath,
     required this.outputDirectoryPath,
     this.outputFileName,
+    this.headless = true,
   });
 
   static Arguments? fromArgs(
@@ -32,6 +35,7 @@ class Arguments {
           inputFilePath: parseResults.inputFilePath,
           outputDirectoryPath: parseResults.outputDirectoryPath,
           outputFileName: parseResults.outputFileName,
+          headless: parseResults.headless,
         );
       }
     } on Object catch (_) {
