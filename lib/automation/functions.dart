@@ -18,6 +18,10 @@ Future<File> waitForDownload({
 }) async {
   return Future(
     () async {
+      if (!outputDirectory.existsSync()) {
+        outputDirectory.createSync();
+      }
+
       while (true) {
         final existingFiles = outputDirectory.listSync();
 
@@ -39,5 +43,11 @@ Future<File> renameDownloadedFile({
   required final File downloadedFile,
   required final String fileName,
 }) {
-  return downloadedFile.rename(fileName);
+  final path = downloadedFile.path;
+  final lastSeparator = path.lastIndexOf(Platform.pathSeparator);
+  final fileExtension = path.split('.').last;
+  final newPath =
+      '${path.substring(0, lastSeparator + 1)}$fileName.$fileExtension';
+
+  return downloadedFile.rename(newPath);
 }
