@@ -13,6 +13,12 @@ void main() async {
     'example/input/eevee.png',
   );
 
+  final outputFolder = Directory(
+    'example/output/',
+  );
+
+  final photoId = DateTime.now().millisecondsSinceEpoch.toString();
+
   // Open a new tab
   print('Starting browser engine...');
   final myPage = await browser.newPage();
@@ -49,7 +55,12 @@ void main() async {
 
   await myPage.devTools.browser.setDownloadBehavior(
     'allow',
-    downloadPath: '/example/output',
+    downloadPath: outputFolder.path,
+  );
+
+  await setDownloadFileId(
+    photoId: photoId,
+    page: myPage,
   );
 
   final saveButtonElement = await myPage.$(
@@ -59,6 +70,14 @@ void main() async {
   // Click save button
   print('Clicking save button...');
   await saveButtonElement.click();
+
+  print('Waiting for moshed photo to be downloaded...');
+  await waitForDownload(
+    outputDirectory: outputFolder,
+    photoId: photoId,
+  );
+
+  print('Downloaded.');
 
   // Gracefully close the browser's process
   await browser.close();
