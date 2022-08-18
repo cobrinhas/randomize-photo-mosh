@@ -18,10 +18,6 @@ Welcome to randomize-photo-mosh! Below are the mandatory arguments you need to s
 -h, --[no-]headful          Specifies whether the automation should run in headful or headless mode. (defaults to headless)
 ```
 
-### Demo
-
-
-https://streamable.com/k1kmlh
+### Demo (headful mode)
 
 https://user-images.githubusercontent.com/26190214/185397338-22022e14-0480-4663-91fb-4b1c4d8308ef.mp4
-
