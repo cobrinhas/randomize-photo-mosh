@@ -16,7 +16,7 @@ void main(final List<String> args) async {
   } else {
     // Download the Chromium binaries, launch it and connect to the "DevTools"
     final browser = await puppeteer.launch(
-      headless: true,
+      headless: arguments.headless,
     );
 
     final inputFile = File(
