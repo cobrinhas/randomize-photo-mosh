@@ -8,12 +8,15 @@ class Arguments {
 
   final String? outputFileName;
 
+  final OutputMode outputMode;
+
   final bool headless;
 
   const Arguments({
     required this.inputFilePath,
     required this.outputDirectoryPath,
     this.outputFileName,
+    this.outputMode = OutputMode.jpeg,
     this.headless = true,
   });
 
@@ -35,10 +38,29 @@ class Arguments {
           inputFilePath: parseResults.inputFilePath,
           outputDirectoryPath: parseResults.outputDirectoryPath,
           outputFileName: parseResults.outputFileName,
+          outputMode: parseResults.outputMode ?? OutputMode.jpeg,
           headless: parseResults.headless,
         );
       }
     } on Object catch (_) {
+      return null;
+    }
+  }
+}
+
+enum OutputMode {
+  jpeg,
+  gif,
+  webm;
+
+  static OutputMode? fromArgument(final String? value) {
+    final lowerValue = value?.toLowerCase();
+
+    final possibleValues = OutputMode.values.where((v) => v.name == lowerValue);
+
+    if (possibleValues.isNotEmpty) {
+      return possibleValues.first;
+    } else {
       return null;
     }
   }

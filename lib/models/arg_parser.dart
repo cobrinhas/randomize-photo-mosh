@@ -1,4 +1,5 @@
 import 'package:args/args.dart';
+import 'package:randomize_photo_mosh/randomize_photo_mosh.dart';
 
 const _kInputFilePathArgumentName = 'input';
 const _kInputFilePathArgumentAbbreviation = 'i';
@@ -14,6 +15,11 @@ const _kOutputFileNameArgumentName = 'name';
 const _kOutputFileNameArgumentAbbreviation = 'n';
 const _kOutputFileNameArgumentHelp =
     'Specifies the file name of the moshed photo';
+
+const _kOutputModeArgumentName = 'mode';
+const _kOutputModeArgumentAbbreviation = 'm';
+const _kOutputModeArgumentHelp =
+    'Specifies the output mode (jpeg, gif, webm) of the moshed photo.';
 
 const _kHeadfulArgumentName = 'headful';
 const _kHeadfulArgumentAbbreviation = 'h';
@@ -44,6 +50,14 @@ ArgParser programArgParser() {
     mandatory: false,
   );
 
+  parser.addOption(
+    _kOutputModeArgumentName,
+    abbr: _kOutputModeArgumentAbbreviation,
+    help: _kOutputModeArgumentHelp,
+    defaultsTo: 'jpeg',
+    mandatory: false,
+  );
+
   parser.addFlag(
     _kHeadfulArgumentName,
     abbr: _kHeadfulArgumentAbbreviation,
@@ -60,6 +74,9 @@ extension ArgResultsExtension on ArgResults {
   String get outputDirectoryPath => this[_kOutputDirectoryPathArgumentName];
 
   String? get outputFileName => this[_kOutputFileNameArgumentName];
+
+  OutputMode? get outputMode =>
+      OutputMode.fromArgument(this[_kOutputModeArgumentName]);
 
   bool get headless => !this[_kHeadfulArgumentName];
 }
