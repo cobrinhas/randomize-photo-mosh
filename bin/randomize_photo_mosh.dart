@@ -29,6 +29,8 @@ void main(final List<String> args) async {
 
     final outputFileName = arguments.outputFileName;
 
+    final outputMode = arguments.outputMode;
+
     final photoId = DateTime.now().millisecondsSinceEpoch.toString();
 
     // Open a new tab
@@ -75,13 +77,10 @@ void main(final List<String> args) async {
       page: myPage,
     );
 
-    final saveButtonElement = await myPage.$(
-      saveButtonSelectorExpression,
+    await saveMoshedPhoto(
+      page: myPage,
+      outputMode: outputMode,
     );
-
-    // Click save button
-    print('Clicking save button...');
-    await saveButtonElement.click();
 
     print('Waiting for moshed photo to be downloaded...');
     final downloadedFile = await waitForDownload(
@@ -106,4 +105,41 @@ void main(final List<String> args) async {
     // Gracefully close the browser's process
     await browser.close();
   }
+}
+
+Future<void> saveMoshedPhoto({
+  required final Page page,
+  required OutputMode outputMode,
+}) async {
+  switch (outputMode) {
+    case OutputMode.webm:
+      final webmOptionElement = await page.$(
+        webmOptionSelectorExpression,
+      );
+
+      // Click webm option
+      print('Clicking webm option...');
+      await webmOptionElement.click();
+      break;
+    case OutputMode.gif:
+      final gifOptionElement = await page.$(
+        gifOptionSelectorExpression,
+      );
+
+      // Click gif option
+      print('Clicking gif option...');
+      await gifOptionElement.click();
+      break;
+    case OutputMode.jpeg:
+    default:
+      break;
+  }
+
+  final saveButtonElement = await page.$(
+    saveButtonSelectorExpression,
+  );
+
+  // Click save button
+  print('Clicking save button...');
+  await saveButtonElement.click();
 }
