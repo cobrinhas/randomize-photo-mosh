@@ -17,7 +17,8 @@ Welcome to randomize-photo-mosh! Below are the mandatory arguments you need to s
 -n, --name                  Specifies the file name of the moshed photo
 -m, --mode                  Specifies the output mode (jpeg, gif, webm) of the moshed photo.
                             (defaults to "jpeg")
--h, --[no-]headful          Specifies whether the automation should run in headful or headless mode. (defaults to headless)```
+-h, --[no-]headful          Specifies whether the automation should run in headful or headless mode. (defaults to headless)
+```
 
 ### Demo (headful mode)
 
